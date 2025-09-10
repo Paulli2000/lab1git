@@ -88,7 +88,8 @@ name_map
 
 ## Write code to determine and display the number of factor, integer, numerical, and character variables there are in the C1survey dataset
 ```{r}
-# Task 4 — super simple base R version
+# Find out how many variables in the dataset are factors, integers, numerics, or characters. Report the counts for each type.
+
 col_classes <- sapply(C1survey, function(x) class(x)[1])
 
 bucket <- ifelse(col_classes %in% "factor", "factor",
@@ -103,7 +104,7 @@ table(bucket)
 
 ## Audit, clean, and summarize bday + bmonth (base R only)
 ```{r}
-# --- Step 5: audit/clean bday & bmonth (base R only) ---
+# Inspect the bday (day of month) and bmonth (month) variables for invalid or missing entries. Remove out-of-range values (e.g., day > 31 or month > 12). After cleaning, calculate the median birth day and median birth month.
 
 # Coerce to numeric robustly (strip non-digits like "07", "Mar", etc.)
 to_int <- function(x) {
@@ -141,11 +142,34 @@ median_bmonth <- median(C1survey$bmonth, na.rm = TRUE)
 cat("\nMedian birthday day (1–31): ", median_bday, "\n", sep = "")
 cat("Median birth month (1–12): ",    median_bmonth, "\n", sep = "")
 
+# --- Plots: distributions of cleaned bday and bmonth ---
+
+op <- par(mfrow = c(1, 2), mar = c(4, 4, 3, 1))  # 1 row, 2 plots
+
+# Histogram of day of month (1–31)
+hist(C1survey$bday,
+     breaks = seq(0.5, 31.5, by = 1),
+     main = "Birth Day (1–31)",
+     xlab  = "Day of Month",
+     ylab  = "Count")
+
+# Histogram of birth month (1–12)
+hist(C1survey$bmonth,
+     breaks = seq(0.5, 12.5, by = 1),
+     main = "Birth Month (1–12)",
+     xlab  = "Month",
+     ylab  = "Count",
+     xaxt  = "n")
+axis(1, at = 1:12, labels = 1:12)
+
+par(op)  # reset layout
+
+
 ```
 
 ## Create bseason, cross-tab with bmonth, and column totals (base R only)
 ```{r}
-# --- Step 6: Alternative style (compact) ---
+# Create a new variable (bseason) that assigns each respondent’s birth month to a season (Winter, Spring, Summer, Fall). Display a month-by-season table to confirm coding, then total the counts per season.
 
 # a) Create a lookup vector: month -> season
 month_to_season <- c(
@@ -179,7 +203,7 @@ cat("Classmates per season -> ",
 
 ## Question: Are more classmates morning larks or night owls, and does this differ by program?
 ```{r}
-# --- Step 7: Alternative style using 'larkORowl'
+# Pick a variable to analyze. Here I examine whether classmates identify as morning larks or night owls (larkORowl). Summarize the overall distribution, compare by program, and visualize the results to see if patterns differ between groups.
 
 # a) Overall distribution (simple one-liner)
 table(C1survey$larkORowl, useNA = "ifany")
@@ -200,4 +224,39 @@ counts <- table(C1survey$larkORowl, useNA = "ifany")
 most_common <- names(counts)[which.max(counts)]
 cat("Answer: The most common type overall is", most_common,
     "with", max(counts), "classmates.\n")
+
+# ---Plots: lark vs owl overall and by program ---
+
+# Overall counts
+lark_counts <- table(C1survey$larkORowl, useNA = "no")
+
+# 1) Overall barplot
+barplot(lark_counts,
+        main = "Morning Lark vs Night Owl (Overall)",
+        xlab = "Type",
+        ylab = "Count",
+        las  = 2)
+
+# 2) Stacked barplot by program
+tab_prog_lark <- table(program = C1survey$program,
+                       type    = C1survey$larkORowl,
+                       useNA   = "no")
+
+barplot(t(tab_prog_lark),
+        main = "Lark vs Owl by Program",
+        xlab = "Program",
+        ylab = "Count",
+        las  = 2,
+        legend = TRUE,
+        args.legend = list(x = "topright", bty = "n"))
+
+# 3) 100% stacked (proportions by program)
+prop_prog_lark <- prop.table(tab_prog_lark, margin = 1)
+barplot(t(prop_prog_lark),
+        main = "Lark vs Owl by Program (Proportions)",
+        xlab = "Program",
+        ylab = "Proportion",
+        las  = 2,
+        legend = TRUE,
+        args.legend = list(x = "topright", bty = "n"))
 ```

@@ -4,8 +4,8 @@ This repository includes the Class 1 survey dataset and R code used to
 analyze it. The project is part of an exercise to practice working with real-
 world data in R.
 ## Files Included
-- `class1_survey.csv`: Cleaned version of the Class 1 survey dataset
-- `analysis_code.R`: R script used to summarize and visualize the data
+- `Class_1_survey_fall_2025_2`: Cleaned version of the Class 1 survey dataset
+- `lab1`: R script used to summarize and visualize the data
 - `README.md`: This file
 ## What the Code Does
 - Reads in the survey dataset

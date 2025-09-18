@@ -260,3 +260,12 @@ barplot(t(prop_prog_lark),
         legend = TRUE,
         args.legend = list(x = "topright", bty = "n"))
 ```
+
+```{r}
+# --- Save the cleaned/modified dataset to CSV ---
+write.csv(C1survey,
+          file = "C1survey_cleaned.csv",
+          row.names = FALSE)
+
+```
+
